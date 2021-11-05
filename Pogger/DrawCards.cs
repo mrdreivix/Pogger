@@ -60,7 +60,7 @@ namespace Poker
         {
             Random randomNumbers = new Random();
 
-            for (int i = 0; i <= 5; i++)
+            for (int i = 0; i <= 1; i++)
             {
                 Card = new Card();
                 Card.TypeOfCard = (DeckOfCards)randomNumbers.Next(1, 14);
