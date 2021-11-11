@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Poker
 {
     public class CheckSetsOfCards
     {
-        public delegate void cos(PokerPlayer player);
+        public delegate void Function(Player player);
 
-        public static List<cos> ListOfFunctions = new List<cos>() { StraightFlushSet, FourOfAKindSet, FullHouseSet, FlushSet, StraightSet, ThreeOfAKindSet, TwoPairsSet, OnePairSet, HighCardSet };
-        public static void CheckSetOfCards(PokerPlayer player1, PokerPlayer player2)
+        public static List<Function> ListOfFunctions = new List<Function>() { StraightFlushSet, FourOfAKindSet, FullHouseSet, FlushSet, StraightSet, ThreeOfAKindSet, TwoPairsSet, OnePairSet, HighCardSet };
+        public static void CheckSetOfCards(Player player1, Player player2)
         {
-
+            player1.StrongestSet = 0;
+            player2.StrongestSet = 0;
+            player1.StrongestCardsInSet.Clear();
+            player2.StrongestCardsInSet.Clear();
             foreach (var i in ListOfFunctions)
             {
                 i(player1);
@@ -20,84 +22,86 @@ namespace Poker
                 if (player1.StrongestSet > 0 || player2.StrongestSet > 0)
                 {
                     CheckWhoIsTheWinner.CheckTheWinner(player1, player2);
+                    return;
                 }
+                
             }
 
         }
-        public static void HighCardSet(PokerPlayer player)
+        public static void HighCardSet(Player player)
         {
 
 
-            player.StrongestSet = SetsOfCards.HighCard;
+            player.StrongestSet = SetOfCard.HighCard;
 
-            player.StrongestCardsInSet.AddRange(player.PlayersCards.Take(5));
+            player.StrongestCardsInSet.AddRange(player.WithTableCards.Take(5));
 
         }
 
-        public static void FourOfAKindSet(PokerPlayer player)
+        public static void FourOfAKindSet(Player player)
         {
 
 
-            if (player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 4).Count > 0)
+            if (player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 4).Count > 0)
             {
-                player.StrongestSet = SetsOfCards.FourOfAKind;
-                player.StrongestCardsInSet.Add(player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 4).OrderByDescending(l => l.TypeOfCard).First());
-                player.StrongestCardsInSet.Add(player.PlayersCards.Where(s => s.TypeOfCard != player.StrongestCardsInSet[0].TypeOfCard).OrderByDescending(c => c.TypeOfCard).First());
-                Console.WriteLine(player.NameOfPlayer + ": ma Four Of Kind");
+                player.StrongestSet = SetOfCard.FourOfAKind;
+                player.StrongestCardsInSet.Add(player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 4).OrderByDescending(l => l.TypeOfCard).First());
+                player.StrongestCardsInSet.Add(player.WithTableCards.Where(s => s.TypeOfCard != player.StrongestCardsInSet[0].TypeOfCard).OrderByDescending(c => c.TypeOfCard).First());
+                Console.WriteLine(player.Name + ": ma Four Of Kind");
             }
 
 
         }
-        public static void ThreeOfAKindSet(PokerPlayer player)
+        public static void ThreeOfAKindSet(Player player)
         {
 
 
-            if (player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 3).Count > 0)
+            if (player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 3).Count > 0)
             {
-                player.StrongestSet = SetsOfCards.ThreeOfAKind;
-                player.StrongestCardsInSet.Add(player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 3).OrderByDescending(l => l.TypeOfCard).First());
-                player.StrongestCardsInSet.AddRange(player.PlayersCards.Where(s => s.TypeOfCard != player.StrongestCardsInSet[0].TypeOfCard).OrderByDescending(c => c.TypeOfCard).Take(2));
-                Console.WriteLine(player.NameOfPlayer + ": ma three of kind");
+                player.StrongestSet = SetOfCard.ThreeOfAKind;
+                player.StrongestCardsInSet.Add(player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 3).OrderByDescending(l => l.TypeOfCard).First());
+                player.StrongestCardsInSet.AddRange(player.WithTableCards.Where(s => s.TypeOfCard != player.StrongestCardsInSet[0].TypeOfCard).OrderByDescending(c => c.TypeOfCard).Take(2));
+                Console.WriteLine(player.Name + ": ma three of kind");
             }
 
         }
-        public static void OnePairSet(PokerPlayer player)
+        public static void OnePairSet(Player player)
         {
 
 
-            if (player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 2).Count > 0)
+            if (player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 2).Count > 0)
             {
-                player.StrongestSet = SetsOfCards.OnePair;
-                player.StrongestCardsInSet.Add(player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 2).OrderByDescending(l => l.TypeOfCard).First());
-                player.StrongestCardsInSet.AddRange(player.PlayersCards.Where(s => s.TypeOfCard != player.StrongestCardsInSet[0].TypeOfCard).OrderByDescending(c => c.TypeOfCard).Take(3));
-                Console.WriteLine(player.NameOfPlayer + ": ma One Pair");
+                player.StrongestSet = SetOfCard.OnePair;
+                player.StrongestCardsInSet.Add(player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 2).OrderByDescending(l => l.TypeOfCard).First());
+                player.StrongestCardsInSet.AddRange(player.WithTableCards.Where(s => s.TypeOfCard != player.StrongestCardsInSet[0].TypeOfCard).OrderByDescending(c => c.TypeOfCard).Take(3));
+                Console.WriteLine(player.Name + ": ma One Pair");
             }
 
         }
 
-        public static void TwoPairsSet(PokerPlayer player)
+        public static void TwoPairsSet(Player player)
         {
 
-            if (player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 2).Count > 2)
+            if (player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 2).Count > 2)
             {
-                player.StrongestSet = SetsOfCards.TwoPair;
-                player.StrongestCardsInSet.AddRange(player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 2).OrderByDescending(l => l.TypeOfCard).Take(4));
-                player.StrongestCardsInSet.Add(player.PlayersCards.Where(s => s.TypeOfCard != player.StrongestCardsInSet[0].TypeOfCard && s.TypeOfCard != player.StrongestCardsInSet[2].TypeOfCard).OrderByDescending(c => c.TypeOfCard).First());
+                player.StrongestSet = SetOfCard.TwoPair;
+                player.StrongestCardsInSet.AddRange(player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 2).OrderByDescending(l => l.TypeOfCard).Take(4));
+                player.StrongestCardsInSet.Add(player.WithTableCards.Where(s => s.TypeOfCard != player.StrongestCardsInSet[0].TypeOfCard && s.TypeOfCard != player.StrongestCardsInSet[2].TypeOfCard).OrderByDescending(c => c.TypeOfCard).First());
 
-                Console.WriteLine(player.NameOfPlayer + ": ma Two Pair");
+                Console.WriteLine(player.Name + ": ma Two Pair");
             }
         }
-        public static void StraightSet(PokerPlayer player)
+        public static void StraightSet(Player player)
         {
 
 
 
-            foreach (var lanes in player.PlayersCards)
+            foreach (var lanes in player.WithTableCards)
             {
                 for (int i = 1; i < 5; i++)
                 {
 
-                    if (player.PlayersCards.Exists(s => (int)s.TypeOfCard + i == (int)lanes.TypeOfCard))
+                    if (player.WithTableCards.Exists(s => (int)s.TypeOfCard + i == (int)lanes.TypeOfCard))
                     {
 
 
@@ -106,12 +110,12 @@ namespace Poker
 
                             for (int u = 0; u < 5; u++)
                             {
-                                player.StrongestCardsInSet.Add(player.PlayersCards.Find(r => (int)r.TypeOfCard + u == (int)lanes.TypeOfCard));
+                                player.StrongestCardsInSet.Add(player.WithTableCards.Find(r => (int)r.TypeOfCard + u == (int)lanes.TypeOfCard));
                             }
 
-                            player.StrongestSet = SetsOfCards.Straight;
+                            player.StrongestSet = SetOfCard.Straight;
 
-                            Console.WriteLine(player.NameOfPlayer + ": ma straight");
+                            Console.WriteLine(player.Name + ": ma straight");
                             return;
                         }
 
@@ -131,18 +135,18 @@ namespace Poker
         }
 
 
-        public static void FlushSet(PokerPlayer player)
+        public static void FlushSet(Player player)
         {
 
-            foreach (var i in player.PlayersCards)
+            foreach (var i in player.WithTableCards)
             {
 
-                if (player.PlayersCards.FindAll(s => s.ColorOfCard == i.ColorOfCard).Count >= 5)
+                if (player.WithTableCards.FindAll(s => s.ColorOfCard == i.ColorOfCard).Count >= 5)
                 {
-                    player.StrongestSet = SetsOfCards.Flush;
-                    Console.WriteLine(player.NameOfPlayer + ": ma Flush");
+                    player.StrongestSet = SetOfCard.Flush;
+                    Console.WriteLine(player.Name + ": ma Flush");
 
-                    foreach (var s in player.PlayersCards.FindAll(s => s.ColorOfCard == i.ColorOfCard))
+                    foreach (var s in player.WithTableCards.FindAll(s => s.ColorOfCard == i.ColorOfCard))
                     {
                         player.StrongestCardsInSet.Add(s);
                         if (player.StrongestCardsInSet.Count == 5)
@@ -155,39 +159,39 @@ namespace Poker
             }
 
         }
-        public static void FullHouseSet(PokerPlayer player)
+        public static void FullHouseSet(Player player)
         {
 
 
-            if (player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 3).Count > 0 && player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 2).Count > 0)
+            if (player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 3).Count > 0 && player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 2).Count > 0)
             {
-                player.StrongestCardsInSet.Add(player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 3).OrderByDescending(l => l.TypeOfCard).First());
-                player.StrongestCardsInSet.Add(player.PlayersCards.FindAll(s => player.PlayersCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 2).OrderByDescending(l => l.TypeOfCard).First());
-                player.StrongestSet = SetsOfCards.FullHouse;
-                Console.WriteLine(player.NameOfPlayer + ": ma FullHouse");
+                player.StrongestCardsInSet.Add(player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 3).OrderByDescending(l => l.TypeOfCard).First());
+                player.StrongestCardsInSet.Add(player.WithTableCards.FindAll(s => player.WithTableCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 2).OrderByDescending(l => l.TypeOfCard).First());
+                player.StrongestSet = SetOfCard.FullHouse;
+                Console.WriteLine(player.Name + ": ma FullHouse");
             }
 
 
         }
 
-        public static void StraightFlushSet(PokerPlayer player)
+        public static void StraightFlushSet(Player player)
         {
 
 
 
-            foreach (var lanes in player.PlayersCards)
+            foreach (var lanes in player.WithTableCards)
             {
                 player.StrongestCardsInSet.Add(lanes);
                 for (int i = 1; i < 5; i++)
                 {
 
-                    if (player.PlayersCards.Exists(s => (int)s.TypeOfCard + i == (int)lanes.TypeOfCard && s.ColorOfCard == lanes.ColorOfCard))
+                    if (player.WithTableCards.Exists(s => (int)s.TypeOfCard + i == (int)lanes.TypeOfCard && s.ColorOfCard == lanes.ColorOfCard))
                     {
 
                         if (i == 4)
                         {
-                            player.StrongestSet = SetsOfCards.StraightFlush;
-                            Console.WriteLine(player.NameOfPlayer + ": ma StraightFlush");
+                            player.StrongestSet = SetOfCard.StraightFlush;
+                            Console.WriteLine(player.Name + ": ma StraightFlush");
                             return;
                         }
 

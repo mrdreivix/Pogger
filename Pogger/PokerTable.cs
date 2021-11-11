@@ -4,11 +4,8 @@ using System.Text;
 
 namespace Poker
 {
-    public enum ColorOfCards
+    public class PokerTable
     {
-        Clubs = 1,
-        Diamonds,
-        Spades,
-        Hearts
+        public static List<Card> CardsOnTable = new List<Card>();
     }
 }

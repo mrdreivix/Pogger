@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Poker
+﻿namespace Poker
 {
-    public enum SetsOfCards
+    public enum SetOfCard
     {
         Default,
-        HighCard = 1,
+        HighCard,
         OnePair,
         TwoPair,
         ThreeOfAKind,

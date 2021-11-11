@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Poker
 {
     public class CheckWhoIsTheWinner
     {
-        public static void CheckTheWinner(PokerPlayer player1, PokerPlayer player2)
+        public static void CheckTheWinner(Player player1, Player player2)
         {
-            if (player1.StrongestSet != (SetsOfCards)0 || player2.StrongestSet != (SetsOfCards)0)
-            {
+           
 
 
                 if (player1.StrongestSet == player2.StrongestSet)
@@ -18,19 +15,20 @@ namespace Poker
                     {
                         if (player1.StrongestCardsInSet[i].TypeOfCard > player2.StrongestCardsInSet[i].TypeOfCard)
                         {
-                            Console.WriteLine("wygrał player1");
-                            Environment.Exit(1);
+                            Console.WriteLine("player1 won");
+                        return;
 
                         }
                         else if (player1.StrongestCardsInSet[i].TypeOfCard < player2.StrongestCardsInSet[i].TypeOfCard)
                         {
-                            Console.WriteLine("wygrał player2");
-                            Environment.Exit(1);
+                            Console.WriteLine("player2 won");
+                        return;
 
                         }
+                        
                     }
-                    Console.WriteLine("remis");
-                    Environment.Exit(1);
+                    Console.WriteLine("draw");
+                    
 
 
 
@@ -38,17 +36,17 @@ namespace Poker
 
                 else if (player1.StrongestSet > player2.StrongestSet)
                 {
-                    Console.WriteLine("wygrał player1");
-                    Environment.Exit(1);
+                    Console.WriteLine("player1 won");
+                    
 
                 }
                 else if (player1.StrongestSet < player2.StrongestSet)
                 {
-                    Console.WriteLine("wygrał player2");
-                    Environment.Exit(1);
+                    Console.WriteLine("player2 won");
+                    
 
                 }
-            }
+            
 
 
         }

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Poker
+﻿namespace Poker
 {
     public enum DeckOfCards
     {
-        Default = 0,
-        Two = 1,
+        Two,
         Three,
         Four,
         Five,
@@ -19,6 +14,6 @@ namespace Poker
         Jack,
         Queen,
         King,
-        As
+        Ace
     }
 }
