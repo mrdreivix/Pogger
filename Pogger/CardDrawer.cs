@@ -1,37 +1,34 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 
 namespace Poker
 {
     public static class CardDrawer
     {
-
-      
-
-        public static List<Card> AllDrewCards = new List<Card>() { };
-        public static void DrawTableCards(List<Card> listOfCards,int numberOfCards)
+        public static List<Card> AllDrewCards;
+        public static List<Card> DrawTableCards(int numberOfCards)
         {
-            listOfCards.Clear();
-
+            AllDrewCards = new List<Card>();
             Random randomNumber = new Random();
-            
+            var listOfCards = new List<Card>();
+
             while(listOfCards.Count != numberOfCards)
             {
-                Card Card = new Card();
-                CardRandomization.RandomizeCard(Card, randomNumber);
-                if (!(AllDrewCards.Exists(s => s.TypeOfCard == Card.TypeOfCard && s.ColorOfCard == Card.ColorOfCard)))
+                var card = new Card() 
                 {
-                    listOfCards.Add(Card);
-                    AllDrewCards.Add(Card);
+                    TypeOfCard = (DeckOfCards)(randomNumber.Next(Enum.GetNames(typeof(DeckOfCards)).Length)),
+                    ColorOfCard = (ColorOfCard)(randomNumber.Next(Enum.GetNames(typeof(ColorOfCard)).Length))
+                };
+
+                if (!(AllDrewCards.Exists(s => s.TypeOfCard == card.TypeOfCard && s.ColorOfCard == card.ColorOfCard)))
+                {
+                    listOfCards.Add(card);
+                    AllDrewCards.Add(card);
                 }
             }
-            
-
+            return listOfCards;
         }
-
-       
-
     }
 }

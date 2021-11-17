@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Poker
@@ -7,18 +8,17 @@ namespace Poker
     {
         public static void Main(string[] args)
         {
-            var Player1 = new Player()
+            var player1 = new Player()
             {
                 Name = "Player1"
             };
 
-            var Player2 = new Player()
+            var player2 = new Player()
             {
                 Name = "Player2"
             };
-            
 
-
+            var table = new PokerTable();
             Console.WriteLine("Hello. Welcome in Poker.");
             Console.WriteLine("You have 4 available commends Draw Cards/Show Cards/Check The Winner/Exit");
             var action = (string)default;
@@ -29,87 +29,51 @@ namespace Poker
                 action = Console.ReadLine().ToLower().Replace(" ","");
                 switch (action)
                 { 
-                    case "drawcards":
+                    case "drawcards"://wrzucic wszystko w switchach do funkcji zeby switchbyl mniejszy
                         {
-                            CardDrawer.AllDrewCards.Clear();
-
-                            Player2.WithTableCards.Clear();
-
-                            Player1.WithTableCards.Clear();
-
-                            CardDrawer.DrawTableCards(PokerTable.CardsOnTable, 5);
-
-                            CardDrawer.DrawTableCards(Player1.Cards, 2);
-
-                            CardDrawer.DrawTableCards(Player2.Cards, 2);
-
-                            Player1.WithTableCards.AddRange(Player1.Cards);
-
-                            Player1.WithTableCards.AddRange(PokerTable.CardsOnTable);
-
-                            Player2.WithTableCards.AddRange(Player2.Cards);
-
-                            Player2.WithTableCards.AddRange(PokerTable.CardsOnTable);
-
+                            table.Cards = CardDrawer.DrawTableCards(5);
+                            player1.Cards = CardDrawer.DrawTableCards(2);
+                            player2.Cards = CardDrawer.DrawTableCards(2);
                             Console.WriteLine("\nCards drawn");
-
                             break;
                         }
                     case "showcards":
                         {
-                            if (Player1.Cards.Count > 0)
+                            if (player1.Cards.Count > 0)
                             {
-
                                 Console.WriteLine("\nPlayer1 Cards:\n");
-
-                                foreach (var card in Player1.Cards)
-                                {
-                                    Console.WriteLine(card.TypeOfCard + " " + card.ColorOfCard);
-                                }
+                                foreach (var card in player1.Cards)
+                                Console.WriteLine(card.TypeOfCard + " " + card.ColorOfCard);
 
                                 Console.WriteLine("\nPlayer2 Cards:\n");
+                                foreach (var card in player2.Cards)
+                                Console.WriteLine(card.TypeOfCard + " " + card.ColorOfCard);
 
-                                foreach (var card in Player2.Cards)
-                                {
-                                    Console.WriteLine(card.TypeOfCard + " " + card.ColorOfCard);
-                                }
                                 Console.WriteLine("\nCards on the table:\n");
-
-                                foreach (var card in PokerTable.CardsOnTable)
-                                {
-                                    Console.WriteLine(card.TypeOfCard + " " + card.ColorOfCard);
-
-                                }
+                                foreach (var card in table.Cards)
+                                Console.WriteLine(card.TypeOfCard + " " + card.ColorOfCard);
                             }
                             else
                             {
                                 Console.WriteLine("\nFirst you have to DrawCards");
                             }
-                      
                             break;
-
                         }
                     case "checkthewinner":
                         {
-                            if (Player1.Cards.Count > 0)
+                            Console.WriteLine();
+                            if (player1.Cards.Count > 0)
                             {
-
-                                PokerTable.CardsOnTable = PokerTable.CardsOnTable.OrderByDescending(s => (int)s.TypeOfCard).ToList();
-
-                                Player2.Cards = Player2.Cards.OrderByDescending(s => (int)s.TypeOfCard).ToList();
-
-                                Player1.Cards = Player1.Cards.OrderByDescending(s => (int)s.TypeOfCard).ToList();
-
-
-                                Console.WriteLine("\n\n");
-
-                                CheckSetsOfCards.CheckSetOfCards(Player1, Player2);
+                                var Player1Set = PlayerAndTableCardsConnector.ConnectCards(player1.Cards, table.Cards).CheckSetOfCards();
+                                Console.WriteLine("player 1 have: "+ Player1Set.set);
+                                var Player2Set = PlayerAndTableCardsConnector.ConnectCards(player2.Cards, table.Cards).CheckSetOfCards();
+                                Console.WriteLine("player 2 have: " + Player2Set.set);
+                                WinnerChecker.CheckTheWinner(Player1Set, Player2Set);
                             }
                             else
                             {
                                 Console.WriteLine("\nFirst you have to DrawCards");
                             }
-
                             break;
                         }
                     case "exit":
@@ -123,16 +87,7 @@ namespace Poker
                             break;
                         }
                 }
-
-
-
-
-    
-
             }
-
-
-
         }
     }
 }

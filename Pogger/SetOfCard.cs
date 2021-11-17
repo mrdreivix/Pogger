@@ -2,7 +2,7 @@
 {
     public enum SetOfCard
     {
-        Default,
+        Unknown,
         HighCard,
         OnePair,
         TwoPair,

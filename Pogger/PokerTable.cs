@@ -6,6 +6,6 @@ namespace Poker
 {
     public class PokerTable
     {
-        public static List<Card> CardsOnTable = new List<Card>();
+        public List<Card> Cards = new List<Card>();
     }
 }
