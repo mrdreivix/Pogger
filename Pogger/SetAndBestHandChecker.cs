@@ -1,26 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-//ENTERY WSZEDZIE USUUUUUUUUUUUN
 namespace Poker
 {
     public static class SetAndBestHandChecker
     {
         private const int MAX_NUMBER_OF_CARDS = 5;
-
-        public delegate (SetOfCard set,List<Card>) Function(List<Card> playerCards);
-
-        public static List<Card> BestHand;
-
-        public static List<Function> ListOfFunctions = new List<Function>() 
-        { CheckStraightFlushSet, CheckFourOfAKindSet, 
+        private delegate (SetOfCard set, List<Card>) Function(List<Card> playerCards);
+        private static List<Card> BestHand;
+        private static List<Function> ListOfFunctions = new List<Function>()
+        { CheckStraightFlushSet, CheckFourOfAKindSet,
           CheckFullHouseSet, CheckFlushSet, CheckStraightSet, CheckThreeOfAKindSet, CheckTwoPairsSet, CheckOnePairSet,};
-        public static (SetOfCard set,List<Card>) CheckSetOfCards(this List<Card> playerCards)
+        public static (SetOfCard set, List<Card>) CheckSetOfCards(List<Card> playerCards)
         {
             foreach (var function in ListOfFunctions)
             {
                 var setOrBestHand = function(playerCards);
-                var k = CheckFlushSet(playerCards);
                 if (setOrBestHand.set > SetOfCard.HighCard)
                 {
                     return function(playerCards);
@@ -28,28 +22,27 @@ namespace Poker
             }
             return CheckHighCardSet(playerCards);
         }
-        public static (SetOfCard,List<Card>) CheckHighCardSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckHighCardSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             BestHand.AddRange(playerCards.Take(5));
-            return (SetOfCard.HighCard,BestHand);
+            return (SetOfCard.HighCard, BestHand);
         }
-
-        public static (SetOfCard, List<Card>) CheckFourOfAKindSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckFourOfAKindSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             if (playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 4).Count > 0)
             {
                 BestHand.Add(playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 4).OrderByDescending(l => l.TypeOfCard).First());
                 BestHand.Add(playerCards.Where(s => s.TypeOfCard != BestHand[0].TypeOfCard).OrderByDescending(c => c.TypeOfCard).First());
-                return (SetOfCard.FourOfAKind,BestHand);
+                return (SetOfCard.FourOfAKind, BestHand);
             }
             else
             {
-                return (SetOfCard.Unknown,BestHand);
+                return (SetOfCard.Unknown, BestHand);
             }
         }
-        public static (SetOfCard, List<Card>) CheckThreeOfAKindSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckThreeOfAKindSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             if (playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 3).Count > 0)
@@ -63,18 +56,18 @@ namespace Poker
                 return (SetOfCard.Unknown, BestHand);
             }
         }
-        public static (SetOfCard, List<Card>) CheckOnePairSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckOnePairSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             if (playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).Count == 2).Count > 0)
             {
                 BestHand.Add(playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 2).OrderByDescending(l => l.TypeOfCard).First());
                 BestHand.AddRange(playerCards.Where(s => s.TypeOfCard != BestHand[0].TypeOfCard).OrderByDescending(c => c.TypeOfCard).Take(3));
-                return (SetOfCard.OnePair,BestHand);
+                return (SetOfCard.OnePair, BestHand);
             }
-            return (SetOfCard.Unknown,BestHand);
+            return (SetOfCard.Unknown, BestHand);
         }
-        public static (SetOfCard, List<Card>) CheckTwoPairsSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckTwoPairsSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             if (playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 2).Count > 2)
@@ -89,7 +82,7 @@ namespace Poker
                 return (SetOfCard.Unknown, BestHand);
             }
         }
-        public static (SetOfCard, List<Card>) CheckStraightSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckStraightSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             foreach (var card in playerCards)
@@ -115,26 +108,26 @@ namespace Poker
             }
             return (SetOfCard.Unknown, BestHand);
         }
-        public static (SetOfCard, List<Card>) CheckFlushSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckFlushSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             foreach (var card in playerCards)
             {
-                if (playerCards.FindAll(s => s.ColorOfCard == card.ColorOfCard).Count >= 5)
+                if (playerCards.FindAll(s => s.ColorOfCard == card.ColorOfCard).Count >= MAX_NUMBER_OF_CARDS)
                 {
                     foreach (var s in playerCards.FindAll(s => s.ColorOfCard == card.ColorOfCard))
                     {
                         BestHand.Add(s);
-                        if (BestHand.Count == 5)
+                        if (BestHand.Count == MAX_NUMBER_OF_CARDS)
                         {
-                            return (SetOfCard.Flush,BestHand);
+                            return (SetOfCard.Flush, BestHand);
                         }
                     }
                 }
             }
-            return (SetOfCard.Unknown,BestHand);
+            return (SetOfCard.Unknown, BestHand);
         }
-        public static (SetOfCard, List<Card>) CheckFullHouseSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckFullHouseSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             if (playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count == 3).Count > 0 &&
@@ -142,14 +135,14 @@ namespace Poker
             {
                 BestHand.Add(playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 3).OrderByDescending(l => l.TypeOfCard).First());
                 BestHand.Add(playerCards.FindAll(s => playerCards.FindAll(p => p.TypeOfCard == s.TypeOfCard).ToList().Count() == 2).OrderByDescending(l => l.TypeOfCard).First());
-                return (SetOfCard.FullHouse,BestHand);
+                return (SetOfCard.FullHouse, BestHand);
             }
             else
             {
                 return (SetOfCard.Unknown, BestHand);
             }
         }
-        public static (SetOfCard, List<Card>) CheckStraightFlushSet(List<Card> playerCards)
+        private static (SetOfCard, List<Card>) CheckStraightFlushSet(List<Card> playerCards)
         {
             BestHand = new List<Card>();
             foreach (var card in playerCards)
@@ -162,7 +155,7 @@ namespace Poker
                         BestHand.Add(playerCards.Find(s => (int)s.TypeOfCard + i == (int)card.TypeOfCard && s.ColorOfCard == card.ColorOfCard));
                         if (i == 4)
                         {
-                            return (SetOfCard.StraightFlush,BestHand);
+                            return (SetOfCard.StraightFlush, BestHand);
                         }
                     }
                     else
@@ -172,7 +165,7 @@ namespace Poker
                     }
                 }
             }
-            return (SetOfCard.Unknown,BestHand);
+            return (SetOfCard.Unknown, BestHand);
         }
     }
 }
